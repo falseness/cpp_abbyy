@@ -28,7 +28,7 @@ auto sum( InputIter begin , InputIter end )
 }
 
 int main() {
-    https://godbolt.org/z/oeeTeh4Mb
+    // https://godbolt.org/z/ra9xqfoMn
     std::vector<std::pair<Person, size_t>> persons;
     persons.emplace_back(Person{"A", "Ba"}, 1);
     persons.emplace_back(Person{"Ca", "Ba"}, 12);
@@ -40,5 +40,5 @@ int main() {
     printRange("filtered", filtered);
     std::cout << "sum\n";
     // не было сказано, считать в double или в int'ах
-    std::cout << sum(filtered.begin(), filtered.end()) / std::ranges::distance(filtered.begin(), filtered.end());
+    std::cout << sum(filtered.begin(), filtered.end()) / std::ranges::distance(filtered);
 }
