@@ -40,7 +40,7 @@ class Solution {
 public:
     vector<TreeNode*> generateTrees(int n) {
         found_tree_.resize(n, vector<vector<TreeNode*>>(n));
-        auto result = generateTrees(1, n); 
+        vector<TreeNode*> result = generateTrees(1, n); 
         found_tree_.clear();
         return result;
     }
