@@ -1,39 +1,9 @@
 /*
-Используем алгоритм Краскала.
-Лень писать быструю реализацию СНМ, потому что асимптотически
-это то же самое. Моя реализация отвечает на запросы за O(logV)
-в среднем
-Асимптотика O(ElogE + ElogV) = O(ElogE)
+Просят найти миностов. 
+Использую алгоритм Прима.
 
-Можно было написать алгоритм Прима с фиббоначиевой пирамидой и получить
-асимптотику O(E + VlogV), но зачем?
+Асимптотика O(n^2). Память O(n)
 */
-class DisjointSet {
-public:
-    DisjointSet(size_t size) : parent_(size) {
-        std::iota(parent_.begin(), parent_.end(), 0);
-    } 
-    bool areInSameSet(size_t i, size_t j) {
-        return getParent(i) == getParent(j);
-    }
-    void unionSets(size_t i, size_t j) {
-        parent_[getParent(i)] = getParent(j);
-    }
-private:
-    size_t getParent(size_t i) {
-        if (parent_[i] == i) {
-            return i;
-        }
-        return parent_[i] = getParent(parent_[i]);
-    }
-    vector<size_t> parent_;
-};
-
-struct Edge {
-    int distance;
-    size_t i;
-    size_t j;    
-};
 
 int getDistance(const vector<int>& point1, const vector<int>& point2) {
     assert(point1.size() == point2.size());
@@ -47,22 +17,31 @@ int getDistance(const vector<int>& point1, const vector<int>& point2) {
 class Solution {
 public:
     int minCostConnectPoints(vector<vector<int>>& points) {
-        vector<Edge> edges;
-        for (size_t i = 0; i < points.size(); ++i) {
-            for (size_t j = i + 1; j < points.size(); ++j) {
-                edges.push_back({getDistance(points[i], points[j]), i, j});
-            }
-        }
-        std::ranges::sort(edges, {}, &Edge::distance);
-        DisjointSet connectivity_component(points.size());
+        vector<bool> used(points.size(), false);
+        static constexpr int kInf = 1e9;
+        vector<int> min_distance(points.size(), kInf);
+        min_distance[0] = 0;
         int result = 0;
-        for (auto& edge : edges) {
-            if (connectivity_component.areInSameSet(edge.i, edge.j)) {
-                continue;
+        for (size_t vertices_added = 0; vertices_added < points.size(); ++vertices_added) {
+            int vertex_to_add = -1;
+            for (int i = 0; i < points.size(); ++i) {
+                if (!used[i] && 
+                (vertex_to_add == -1 || min_distance[i] < min_distance[vertex_to_add])) {
+                    vertex_to_add = i;
+                }
             }
-            connectivity_component.unionSets(edge.i, edge.j);
-            result += edge.distance;
+            assert(vertex_to_add != -1);
+            result += min_distance[vertex_to_add];
+            used[vertex_to_add] = true;
+            for (size_t to = 0; to < points.size(); ++to) {
+                if (used[to]) {
+                    continue;
+                }
+                auto new_distance = getDistance(points[vertex_to_add], points[to]);
+                min_distance[to] = std::min(min_distance[to], new_distance);
+            }
         }
         return result;
     }
 };
+
